@@ -1,0 +1,45 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Shop
+{% endblock %}
+
+{% block heading %}
+    Products
+{% endblock %}
+
+{% block main %}
+<div class="mb-4">
+    <form method="GET" action="/shop">
+        <div class="input-group">
+            <input type="text" name="search" class="form-control mr-5" placeholder="Search for products..." value="{{ request.args.get('search', '') }}">
+            <button class="btn btn-primary" type="submit">Search</button>
+        </div>
+    </form>
+</div>
+
+<div class="row row-cols-1 row-cols-sm-2 row-cols-md-2 row-cols-lg-3 g-4">
+    {% for product in products %}
+    <div class="col mb-4">
+        <div class="card shadow h-100">
+            <div class="image-container" style="height: 200px; overflow: hidden; text-align: center;">
+                <img src="{{ product.image }}" class="card-img-top" alt="{{ product.productName }}" style="height: 100%; width: auto; object-fit: cover;">
+            </div>
+            <div class="card-body">
+                <h5 class="card-title">{{ product.productName }} - {{ product.partNumber }}</h5>
+                <p class="card-text">{{ product.productLabel }}</p>
+                <p class="card-text"><strong>Price: ₹{{ product.sale_price }}</strong></p>
+                <p class="card-text">Qty Available: {{ product.inventoryOnHand }}</p>
+                <form method="POST" action="/add_to_cart">
+                    <input type="hidden" name="product_id" value="{{ product.id }}">
+                    <div class="input-group mb-3">
+                        <input type="number" name="quantity" class="form-control mr-5" value="1" min="1" max="{{ product.inventoryOnHand }}">
+                        <button class="btn btn-primary" type="submit">Add to Cart</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

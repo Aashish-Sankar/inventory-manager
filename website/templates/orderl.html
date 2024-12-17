@@ -1,0 +1,133 @@
+{% extends "layout.html" %}
+
+{% block title %}
+  Sales Listing
+{% endblock %}
+
+{% block heading %}
+  Sales Listing
+{% endblock %}
+
+{% block head %}
+  <!-- Custom styles for this page -->
+  <link href="/static/vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
+{% endblock %}
+
+{% block main %}
+<!-- DataTables Example -->
+<div class="card shadow mb-4">
+  <div class="card-header py-3 d-flex justify-content-between align-items-center">
+    <h6 class="m-0 font-weight-bold text-primary">Sales</h6>
+    <input id="searchInput" type="text" class="form-control w-25" placeholder="Search sales...">
+  </div>
+  <div class="card-body">
+    <div class="table-responsive">
+      <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+        <thead>
+          <tr>
+            <th>Sale ID</th>
+            <th>Customer Name</th>
+            <th>Customer Phone</th>
+            <th>Biller Name</th>
+            <th>Total Price</th>
+            <th>Sale Date</th>
+            <th>Details</th>
+            <th>Bill</th>
+          </tr>
+        </thead>
+        <tfoot>
+          <tr>
+            <th>Sale ID</th>
+            <th>Customer Name</th>
+            <th>Customer Phone</th>
+            <th>Biller Name</th>
+            <th>Total Price</th>
+            <th>Sale Date</th>
+            <th>Details</th>
+            <th>Bill</th>
+          </tr>
+        </tfoot>
+        <tbody id="salesTable">
+          {% for order in orders %}
+          <tr class="order-row" data-order-id="{{ order.orderId }}">
+            <td>{{ order.orderId }}</td>
+            <td>{{ order.cust_name }}</td>
+            <td>{{ order.cust_phone }}</td>
+            <td>{{ order.user }}</td>
+            <td>{{ order.total_order_price }}</td>
+            <td>{{ order.oDate }}</td>
+            <td><button class="btn btn-info btn-sm">View Details</button></td>
+            <td>
+              <a href="/download-bill/{{ order.orderId }}" class="btn btn-success btn-sm">Download</a>
+            </td>
+          </tr>
+          <tr class="order-details" id="details-{{ order.orderId }}" style="display:none;">
+            <td colspan="5">
+              <table class="table table-bordered">
+                <thead>
+                  <tr>
+                    <th>Product Name</th>
+                    <th>Part Number</th>
+                    <th>Quantity</th>
+                    <th>Price</th>
+                    <th>Total Price</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for item in order.order_items %}
+                  <tr>
+                    <td>{{ item.product_name }}</td>
+                    <td>{{ item.part_number }}</td>
+                    <td>{{ item.quantity }}</td>
+                    <td>₹{{ item.price }}</td>
+                    <td>₹{{ item.total_price }}</td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Toggle order details
+  document.querySelectorAll('.order-row').forEach(row => {
+    row.addEventListener('click', function() {
+      const orderId = this.dataset.orderId;
+      const detailsRow = document.getElementById(`details-${orderId}`);
+      if (detailsRow.style.display === "none") {
+        detailsRow.style.display = "table-row";
+      } else {
+        detailsRow.style.display = "none";
+      }
+    });
+  });
+
+  // Search functionality
+  const searchInput = document.getElementById('searchInput');
+  const salesTable = document.getElementById('salesTable');
+
+  searchInput.addEventListener('input', function() {
+    const filter = searchInput.value.toLowerCase();
+    const rows = salesTable.getElementsByClassName('order-row');
+    
+    Array.from(rows).forEach(row => {
+      const cells = row.getElementsByTagName('td');
+      const match = Array.from(cells).some(cell => cell.textContent.toLowerCase().includes(filter));
+      row.style.display = match ? '' : 'none';
+
+      // Hide details row if the parent row is hidden
+      const detailsRow = document.getElementById(`details-${row.dataset.orderId}`);
+      if (!match) {
+        detailsRow.style.display = 'none';
+      }
+    });
+  });
+</script>
+{% endblock %}
+

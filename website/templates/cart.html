@@ -1,0 +1,77 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Cart
+{% endblock %}
+
+{% block heading %}
+    Your Cart
+{% endblock %}
+
+{% block main %}
+<div class="card shadow mb-4">
+    <div class="card-body">
+        {% if cart and cart.cart_items %}
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Quantity</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in cart.cart_items %}
+                <tr>
+                    <td>{{ item.product.productName }}</td>
+                    <td>
+                        <!-- Update Quantity Form -->
+                        <form method="POST" action="{{ url_for('views.update_cart_item', item_id=item.id) }}" class="form-inline">
+                            <input type="number" name="quantity" value="{{ item.quantity }}" min="1" class="form-control mt-2" style="width: 80px;">
+                            <button type="submit" class="btn btn-warning ml-2 mt-2">Update</button>
+                        </form>
+                    </td>
+                    <td>
+                        <!-- Remove Item Form -->
+                        <form method="POST" action="{{ url_for('views.remove_from_cart', item_id=item.id) }}">
+                            <button type="submit" class="btn btn-danger mt-2">Remove</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <!-- Checkout Form -->
+        <form method="POST" action="{{ url_for('views.checkout') }}">
+        <div class="form-group">
+                <label for="cust_name">Customer Name</label>
+                <input 
+                    type="tel" 
+                    id="cust_name" 
+                    name="cust_name" 
+                    class="form-control" 
+                    placeholder="Enter customer name" 
+                    required 
+                >
+            </div>
+            <div class="form-group">
+                <label for="cust_phone">Customer Phone</label>
+                <input 
+                    type="tel" 
+                    id="cust_phone" 
+                    name="cust_phone" 
+                    class="form-control" 
+                    minlength="10"
+                    maxlength="10"
+                    placeholder="Enter customer phone number" 
+                    required 
+                >
+            </div>
+            <button class="btn btn-success mt-2">Checkout</button>
+        </form>
+        {% else %}
+        <p>Your cart is empty.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

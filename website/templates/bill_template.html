@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Bill - Order #{{ order.orderId }}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            line-height: 1.6;
+        }
+        .header, .footer {
+            text-align: center;
+        }
+        .header h1 {
+            font-size: 20px;
+            margin: 0;
+        }
+        .order-details {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        .order-details div {
+            width: 48%;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        table, th, td {
+            border: 1px solid #000;
+        }
+        th, td {
+            text-align: left;
+            padding: 8px;
+        }
+        th {
+            background-color: #f4f4f4;
+        }
+        .total {
+            text-align: right;
+            margin-top: 20px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Mani Electricals</h1>
+    </div>
+    <div class="order-details">
+        <div>
+            <p><strong>Order ID:</strong> {{ order.orderId }}</p>
+        </div>
+        <div style="text-align: right;">
+            <p><strong>Sale Date:</strong> {{ order.oDate }}</p>
+        </div>
+    </div>
+    <div>
+        <p><strong>Customer Name:</strong> {{ order.cust_name }}</p>
+        <p><strong>Customer Phone:</strong> {{ order.cust_phone }}</p>
+        <p><strong>Billed By:</strong> {{ order.user }}</p>
+    </div>
+    <table>
+        <thead>
+            <tr>
+                <th>S.No</th>
+                <th>Name-PartNumber/Code</th>
+                <th>Price</th>
+                <th>Qty</th>
+                <th>Total Price</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in order.order_items %}
+            <tr>
+                <td>{{ loop.index }}</td>
+                <td>{{ item.product_name }} - {{ item.part_number }}</td>
+                <td>₹{{ item.price }}</td>
+                <td>{{ item.quantity }}</td>
+                <td>₹{{ item.total_price }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <div class="total">
+        <p>Total Price: ₹{{ order.total_order_price }}</p>
+    </div>
+    <div class="footer">
+        <p>Thank you for your purchase!</p>
+    </div>
+</body>
+</html>

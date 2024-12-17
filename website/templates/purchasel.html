@@ -1,0 +1,109 @@
+{% extends "layout.html" %}
+
+{% block title %}
+  Purchases Listing
+{% endblock %}
+
+{% block heading %}
+  Purchases Listing
+{% endblock %}
+
+{% block head %}
+  <!-- Custom styles for this page -->
+  <link href="/static/vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
+{% endblock %}
+
+{% block main %}
+  <!-- DataTables Example -->
+  <div class="card shadow mb-4">
+    <div class="card-header py-3">
+      <h6 class="m-0 font-weight-bold text-primary">Purchases</h6>
+      <button type="button" class="btn btn-primary float-right" data-toggle="modal" data-target="#addPurchaseModal">
+        Add Purchase
+      </button>
+    </div>
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+          <thead>
+            <tr>
+              <th>Purchase ID</th>
+              <th>Supplier Name</th>
+              <th>Product</th>
+              <th>Number Received</th>
+              <th>Purchase Date</th>
+            </tr>
+          </thead>
+          <tfoot>
+            <tr>
+              <th>Purchase ID</th>
+              <th>Supplier Name</th>
+              <th>Product</th>
+              <th>Number Received</th>
+              <th>Purchase Date</th>
+            </tr>
+          </tfoot>
+          <tbody>
+            {% for row in rows %}
+            <tr>
+              <td>{{ row["purchaseId"] }}</td>
+              <td>{{ row["supplier_name"] }}</td>
+              <td>{{ row["product_name"] }} - {{ row["part_number"] }}</td>
+              <td>{{ row["numberIn"] }}</td>
+              <td>{{ row["pDate"] }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Purchase Modal -->
+  <div class="modal fade" id="addPurchaseModal" tabindex="-1" role="dialog" aria-labelledby="addPurchaseModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="addPurchaseModalLabel">Add Purchase</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form class="user" action="/purchasev" method="POST">
+            <div class="form-group">
+              <input type="date" class="form-control form-control-user" name="purchase-date" placeholder="Date of purchase" required>
+            </div>
+            <div class="form-group">
+              <select class="form-control form-control-user" name="product-name" required>
+                <option value="" selected disabled>Select Product</option>
+                {% for product in products %}
+                <option value="{{ product.productName }}|{{ product.partNumber }}">{{ product.id }} | {{ product.productName }} - {{ product.partNumber }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="form-group">
+              <input type="number" class="form-control form-control-user" name="purchases" placeholder="Number Received" required>
+            </div>
+            <div class="form-group">
+              <select class="form-control form-control-user" name="supplier-name" required>
+                <option value="" selected disabled>Select Supplier</option>
+                {% for supplier in suppliers %}
+                <option value="{{ supplier.supplier }}">{{ supplier.id }} | {{ supplier.supplier }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="form-group row">
+              <div class="col-sm-6 mb-3 mb-sm-0">
+                <input type="submit" class="btn btn-primary btn-user btn-block" value="Submit">
+              </div>
+              <div class="col-sm-6">
+                <input type="reset" class="btn btn-secondary btn-user btn-block" value="Reset">
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
