@@ -1,5 +1,5 @@
 import os
-from flask import Blueprint, json, render_template, request, redirect, session, jsonify, url_for, current_app, flash, make_response, send_file
+from flask import Blueprint, json, render_template, request, redirect, session, jsonify, url_for, current_app, flash, session, send_file
 import openpyxl
 from website.models import db, Product, Order, Purchase, Supplier
 from website.functions import login_required
@@ -8,6 +8,7 @@ from fpdf import FPDF
 import io
 from werkzeug.utils import secure_filename
 from num2words import num2words
+from flask_login import current_user
 
 
 
@@ -16,9 +17,20 @@ views = Blueprint('views', __name__)
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'heic', 'heif'}
 
 @views.route("/")
+def welcome():
+    try:
+        # Render the welcome page for all users accessing "/"
+        return render_template("welcome.html")
+    except Exception as e:
+        flash(f"Error: {str(e)}", 'error')
+        return redirect("/")
+    
+
+@views.route("/index")
 @login_required
 def index():
     try:
+        # Fetch data for logged-in users
         totals = db.session.query(
             db.func.count(Product.productName).label("total_products"),
             db.func.sum(Product.inventoryOut).label("total_orders"),
@@ -30,7 +42,6 @@ def index():
         ).filter(Product.inventoryOnHand < Product.minimumReq, Product.minimumReq != 0).first()
 
         return render_template("index.html", totals=totals, ups=ups)
-
     except Exception as e:
         flash(f"Error: {str(e)}", 'error')
         return redirect("/")
@@ -73,7 +84,7 @@ def get_data():
 
     except Exception as e:
         flash(f"Error: {str(e)}", 'error')
-        return redirect("/")
+        return redirect("/index")
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
@@ -130,7 +141,7 @@ def productv():
 
     except Exception as e:
         flash(f"Error: {str(e)}", 'error')
-        return redirect("/")
+        return redirect("/index")
 
 
 @views.route("/purchasev", methods=["GET", "POST"])
@@ -586,4 +597,4 @@ def upload_products():
     except Exception as e:
         db.session.rollback()  # Rollback in case of any error
         flash(f"Error: {str(e)}", 'error')
-        return redirect("/")
+        return redirect("/index")
