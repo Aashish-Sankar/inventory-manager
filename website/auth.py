@@ -1,4 +1,3 @@
-from turtle import delay
 from flask import Blueprint, render_template, request, redirect, session, flash
 from werkzeug.security import generate_password_hash, check_password_hash
 from website.models import db, User
