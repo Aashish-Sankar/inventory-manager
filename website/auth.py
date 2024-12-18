@@ -39,7 +39,7 @@ def register():
                 flash('Username already exists', 'error')
                 return redirect(request.url)
             
-            hashed_password = generate_password_hash(password)
+            hashed_password = generate_password_hash(password,method='pbkdf2')
             new_user = User(username=username, hash=hashed_password, fullname=fullname)
             db.session.add(new_user)
             db.session.commit()
